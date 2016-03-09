@@ -1,6 +1,6 @@
-This is a docker container for hadoop. 
+This is a Hadoop cluster running in docker containers. The namenode and datanodes run in different containers.
 
-By default it uses data replication "2". To change it edit the hdfs-site.xml file.
+The cluster by default uses data replication "2". To change it edit the hdfs-site.xml file.
 
 To start the namenode run 
 
