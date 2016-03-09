@@ -25,5 +25,5 @@ Hadoop namenode listens on
 
     hdfs://namenode:8020
     
-To use access the namenode from another container link it using "--link namenode:namenode" and then use the afformentioned URL.
+To access the namenode from another container link it using "--link namenode:namenode" and then use the afformentioned URL.
 More info on how to access it using docker network coming soon.
