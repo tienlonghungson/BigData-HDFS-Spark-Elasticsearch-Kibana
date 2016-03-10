@@ -26,3 +26,5 @@ RUN mv hadoop-$HADOOP_VERSION $HADOOP_PREFIX
 # add configuration files
 ADD core-site.xml $HADOOP_CONF_DIR/core-site.xml
 ADD hdfs-site.xml $HADOOP_CONF_DIR/hdfs-site.xml
+
+CMD hdfs namenode -format -nonInteractive & hdfs namenode && hdfs datanode
