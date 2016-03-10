@@ -4,7 +4,7 @@ The cluster by default uses data replication "2". To change it edit the hdfs-sit
 
 To start the namenode run 
 
-    docker run --name namenode -h bde2020/hadoop-namenode
+    docker run --name namenode -h namenode bde2020/hadoop-namenode
 
 To start two datanodes on the same host run
 
