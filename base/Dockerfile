@@ -40,6 +40,8 @@ RUN gpg --keyserver pool.sks-keyservers.net --recv-keys \
     4A6AC5C675B6155682729C9E08D51A0A7501105C \
     8B44A05C308955D191956559A5CEE20A90348D47 
 
+RUN gpg --keyserver pool.sks-keyservers.net --recv-key C36C5F0F
+
 ENV HADOOP_VERSION 2.7.1
 ENV HADOOP_URL https://www.apache.org/dist/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz
 RUN set -x \
