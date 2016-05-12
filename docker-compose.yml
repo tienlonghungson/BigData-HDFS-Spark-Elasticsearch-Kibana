@@ -41,7 +41,7 @@ nodemanager1:
     - ./hadoop.env
 
 datanode1:
-  image: uhopper/hadoop-datanode:1.0.0
+  image: bde2020/hadoop-datanode:1.0.0
   hostname: datanode1
   container_name: datanode1
   domainname: hadoop
@@ -52,7 +52,7 @@ datanode1:
     - ./hadoop.env
 
 datanode2:
-  image: uhopper/hadoop-datanode:1.0.0
+  image: bde2020/hadoop-datanode:1.0.0
   hostname: datanode2
   container_name: datanode2
   domainname: hadoop
