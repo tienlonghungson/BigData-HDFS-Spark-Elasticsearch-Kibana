@@ -27,7 +27,7 @@ historyserver:
   domainname: hadoop
   net: hadoop
   volumes:
-    - historyserver:/hadoop/yarn/timeline
+    - ./data/historyserver:/hadoop/yarn/timeline
   env_file:
     - ./hadoop.env
 
