@@ -1,3 +1,7 @@
+# Changes
+
+Version 1.1.0 introduces healthchecks for the containers.
+
 # Hadoop Docker
 
 To deploy an example HDFS cluster, run:

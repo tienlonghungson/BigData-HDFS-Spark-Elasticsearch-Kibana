@@ -1,0 +1,67 @@
+namenode:
+  build: ./namenode
+  hostname: namenode
+  container_name: namenode
+  net: hadoop
+  volumes:
+    - ./data/namenode:/hadoop/dfs/name
+  environment:
+    - CLUSTER_NAME=test
+  env_file:
+    - ./hadoop.env
+
+resourcemanager:
+  build: ./resourcemanager
+  hostname: resourcemanager
+  container_name: resourcemanager
+  net: hadoop
+  env_file:
+    - ./hadoop.env
+
+historyserver:
+  build: ./historyserver
+  hostname: historyserver
+  container_name: historyserver
+  net: hadoop
+  volumes:
+    - ./data/historyserver:/hadoop/yarn/timeline
+  env_file:
+    - ./hadoop.env
+
+nodemanager1:
+  build: ./nodemanager
+  hostname: nodemanager1
+  container_name: nodemanager1
+  net: hadoop
+  env_file:
+    - ./hadoop.env
+
+datanode1:
+  build: ./datanode
+  hostname: datanode1
+  container_name: datanode1
+  net: hadoop
+  volumes:
+    - ./data/datanode1:/hadoop/dfs/data
+  env_file:
+    - ./hadoop.env
+
+datanode2:
+  build: ./datanode
+  hostname: datanode2
+  container_name: datanode2
+  net: hadoop
+  volumes:
+    - ./data/datanode2:/hadoop/dfs/data
+  env_file:
+    - ./hadoop.env
+
+datanode3:
+  build: ./datanode
+  hostname: datanode3
+  container_name: datanode3
+  net: hadoop
+  volumes:
+    - ./data/datanode3:/hadoop/dfs/data
+  env_file:
+    - ./hadoop.env
