@@ -1,5 +1,5 @@
 namenode:
-  image: bde2020/hadoop-namenode:1.0.0
+  image: bde2020/hadoop-namenode:1.1.0-hadoop2.7.1
   hostname: namenode
   container_name: namenode
   domainname: hadoop
@@ -12,7 +12,7 @@ namenode:
     - ./hadoop.env
 
 resourcemanager:
-  image: bde2020/hadoop-resourcemanager:1.0.0
+  image: bde2020/hadoop-resourcemanager:1.1.0-hadoop2.7.1
   hostname: resourcemanager
   container_name: resourcemanager
   domainname: hadoop
@@ -21,7 +21,7 @@ resourcemanager:
     - ./hadoop.env
 
 historyserver:
-  image: bde2020/hadoop-historyserver:1.0.0
+  image: bde2020/hadoop-historyserver:1.1.0-hadoop2.7.1
   hostname: historyserver
   container_name: historyserver
   domainname: hadoop
@@ -32,7 +32,7 @@ historyserver:
     - ./hadoop.env
 
 nodemanager1:
-  image: bde2020/hadoop-nodemanager:1.0.0
+  image: bde2020/hadoop-nodemanager:1.1.0-hadoop2.7.1
   hostname: nodemanager1
   container_name: nodemanager1
   domainname: hadoop
@@ -41,7 +41,7 @@ nodemanager1:
     - ./hadoop.env
 
 datanode1:
-  image: bde2020/hadoop-datanode:1.0.0
+  image: bde2020/hadoop-datanode:1.1.0-hadoop2.7.1
   hostname: datanode1
   container_name: datanode1
   domainname: hadoop
@@ -52,7 +52,7 @@ datanode1:
     - ./hadoop.env
 
 datanode2:
-  image: bde2020/hadoop-datanode:1.0.0
+  image: bde2020/hadoop-datanode:1.1.0-hadoop2.7.1
   hostname: datanode2
   container_name: datanode2
   domainname: hadoop
@@ -63,7 +63,7 @@ datanode2:
     - ./hadoop.env
 
 datanode3:
-  image: bde2020/hadoop-datanode:1.0.0
+  image: bde2020/hadoop-datanode:1.1.0-hadoop2.7.1
   hostname: datanode3
   container_name: datanode3
   domainname: hadoop
