@@ -1,5 +1,11 @@
 # Hadoop Docker
 
+## Supported Hadoop Versions
+* 2.7.1 with OpenJDK 7
+* 2.7.1 with OpenJDK 8
+
+## Description
+
 To deploy an example HDFS cluster, run:
 ```
   docker network create hadoop
