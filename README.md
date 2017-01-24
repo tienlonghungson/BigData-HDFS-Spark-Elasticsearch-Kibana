@@ -12,7 +12,6 @@ Version 1.1.0 introduces healthchecks for the containers.
 
 To deploy an example HDFS cluster, run:
 ```
-  docker network create hadoop
   docker-compose up
 ```
 
