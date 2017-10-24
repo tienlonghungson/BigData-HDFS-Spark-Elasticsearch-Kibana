@@ -29,10 +29,11 @@ The available configurations are:
 * /etc/hadoop/yarn-site.xml YARN_CONF
 * /etc/hadoop/httpfs-site.xml HTTPFS_CONF
 * /etc/hadoop/kms-site.xml KMS_CONF
+* /etc/hadoop/mapred-site.xml  MAPRED_CONF
 
 If you need to extend some other configuration file, refer to base/entrypoint.sh bash script.
 
-After starting the example Hadoop cluster, you should be able to access interfaces of all the components (substitute domain names by IP addresses from ```network inspect hadoop``` command):
+After starting the example Hadoop cluster, you should be able to access interfaces of all the components (substitute domain names by IP addresses from ```network inspect dockerhadoop_default``` command):
 * Namenode: http://namenode:50070/dfshealth.html#tab-overview
 * History server: http://historyserver:8188/applicationhistory
 * Datanode: http://datanode:50075/
