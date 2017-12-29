@@ -1,3 +1,5 @@
+[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/big-data-europe/Lobby)
+
 # Changes
 
 Version 1.1.0 introduces healthchecks for the containers.
