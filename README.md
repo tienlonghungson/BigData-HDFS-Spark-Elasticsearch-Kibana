@@ -1,12 +1,17 @@
 # Changes
 
-Version 1.1.0 introduces healthchecks for the containers.
+Version 2.0.0 introduces uses wait_for_it script for the cluster startup
 
 # Hadoop Docker
 
 To deploy an example HDFS cluster, run:
 ```
   docker-compose up
+```
+
+Or deploy in swarm:
+```
+docker stack deploy -c docker-compose-v3.yml hadoop
 ```
 
 The configuration parameters can be specified in the hadoop.env file or as environmental variables for specific services (e.g. namenode, datanode etc.):
