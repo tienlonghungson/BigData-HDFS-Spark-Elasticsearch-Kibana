@@ -38,7 +38,7 @@ CORE_CONF corresponds to core-site.xml. fs_defaultFS=hdfs://namenode:8020 will b
 ```
   <property><name>fs.defaultFS</name><value>hdfs://namenode:8020</value></property>
 ```
-To define dash inside a configuration parameter, use double underscore, such as YARN_CONF_yarn_log___aggregation___enable=true (yarn-site.xml):
+To define dash inside a configuration parameter, use triple underscore, such as YARN_CONF_yarn_log___aggregation___enable=true (yarn-site.xml):
 ```
   <property><name>yarn.log-aggregation-enable</name><value>true</value></property>
 ```
