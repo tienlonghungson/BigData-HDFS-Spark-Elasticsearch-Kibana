@@ -19,7 +19,7 @@ To deploy an example HDFS cluster, run:
 
 `docker-compose` creates a docker network that can be found by running `docker network list`, e.g. `dockerhadoop_default`.
 
-Run `docker network inpect` on the network (e.g. `dockerhadoop_default`) to find the IP the hadoop interfaces are published on. Access these interfaces with the following URLs:
+Run `docker network inspect` on the network (e.g. `dockerhadoop_default`) to find the IP the hadoop interfaces are published on. Access these interfaces with the following URLs:
 
 * Namenode: http://<dockerhadoop_IP_address>:50070/dfshealth.html#tab-overview
 * History server: http://<dockerhadoop_IP_address>:8188/applicationhistory
