@@ -1,9 +1,9 @@
-FROM debian:8
+FROM debian:9
+
 MAINTAINER Ivan Ermilov <ivan.s.ermilov@gmail.com>
+MAINTAINER Giannis Mouchakis <gmouchakis@iit.demokritos.gr>
 
-RUN echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/sources.list
-
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -t jessie-backports -y --no-install-recommends openjdk-8-jdk
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends openjdk-8-jdk
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends net-tools curl netcat
