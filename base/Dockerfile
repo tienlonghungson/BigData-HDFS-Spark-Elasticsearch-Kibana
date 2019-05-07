@@ -6,7 +6,7 @@ MAINTAINER Giannis Mouchakis <gmouchakis@iit.demokritos.gr>
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends openjdk-8-jdk
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends net-tools curl netcat
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends net-tools curl netcat gnupg
 
 RUN curl -O https://dist.apache.org/repos/dist/release/hadoop/common/KEYS
 
