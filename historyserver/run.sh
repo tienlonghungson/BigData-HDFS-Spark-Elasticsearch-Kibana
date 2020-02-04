@@ -1,3 +1,3 @@
 #!/bin/bash
 
-$HADOOP_PREFIX/bin/yarn --config $HADOOP_CONF_DIR historyserver
+$HADOOP_HOME/bin/yarn --config $HADOOP_CONF_DIR historyserver
