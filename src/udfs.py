@@ -30,7 +30,7 @@ def labeling_knowledge(knowledge: str):
 def extract_design_pattern(mo_ta_cong_viec: str,yeu_cau_ung_vien: str):
     return [design_pattern for design_pattern in patterns.design_patterns if re.search(design_pattern, mo_ta_cong_viec + " " + yeu_cau_ung_vien, re.IGNORECASE)]
 
-@udf(returnType=ArrayType(ArrayType(IntegerType())))
+@udf(returnType=ArrayType(IntegerType()))
 def normalize_salary(quyen_loi:str):
     def extract_salary(quyen_loi: str):
         salaries = []
@@ -38,8 +38,29 @@ def normalize_salary(quyen_loi:str):
             salaries.extend(re.findall(pattern, unicodedata.normalize('NFKC', quyen_loi), re.IGNORECASE))
         return salaries
 
+    def sal_to_bin_list(sal:int):
+        vnd_range_list=[0]*11
+        sal = int(sal/10)
+        if sal<10:
+            vnd_range_list[sal]=1
+        else :
+            vnd_range_list[10]=1
+        return vnd_range_list
+
+    def range_to_bin_list(start:int, end:int):
+        vnd_range_list=[0]*11
+        start = int(start/10)
+        end = int(end/10)
+        if end >= 10:
+            end=10
+        for i in range(start,end+1):
+        # vnd_range_list=[sal for sal in range(start,end+1)]
+            vnd_range_list[i]=1
+        return vnd_range_list
+
+
     def dollar_to_vnd(dollar:int):
-        return math.floor(dollar*23/1000)
+        return sal_to_bin_list(math.floor(dollar*23/1000))
 
     def dollar_handle(currency:str):
         if not currency.__contains__("$"):
@@ -57,9 +78,9 @@ def normalize_salary(quyen_loi:str):
         try :
             # print("try converting ",ext_curr)
             val_curr = int(ext_curr)
-            return [dollar_to_vnd(val_curr)]
+            return dollar_to_vnd(val_curr)
         except ValueError:
-            return [0]
+            return [0]*11
 
     def normalize_vnd(vnd:str):
         mill = "000000"
@@ -71,27 +92,28 @@ def normalize_salary(quyen_loi:str):
             vnd = math.floor(int(norm_vnd)/1000000)
             return vnd
         except ValueError:
-            # print("Value Error while converting ",norm_vnd)
+            print("Value Error while converting ",norm_vnd)
             return None
 
     def vnd_handle(ori_range_list:list):
-        vnd_range_list=[]
 
         if (len(ori_range_list)==1):
             sal = normalize_vnd(ori_range_list[0])
             if sal!=None:
-                vnd_range_list=[sal]
+                # vnd_range_list=[sal]
+                return sal_to_bin_list(sal)
         else :
             try :
                 start = int(ori_range_list[0].strip().replace(".","").replace(",",""))
                 end = normalize_vnd(ori_range_list[1])
                 if end!=None :
-                    vnd_range_list=[sal for sal in range(start,end+1)]
+                    # vnd_range_list=[sal for sal in range(start,end+1)]
+                    return range_to_bin_list(start,end)
                 else :
                     print("Error converting end ",ori_range_list[1]," with start ",ori_range_list[0])
             except ValueError:
                 print("Error Converting Start ",ori_range_list[0]," with end ",ori_range_list[1])
-        return vnd_range_list
+        return [0]*11
 
     def salary_handle(currency:str):
         range_val = dollar_handle(currency)
@@ -105,7 +127,12 @@ def normalize_salary(quyen_loi:str):
     salaries = extract_salary(quyen_loi)
     range_salary_set=set()
     for sal in salaries:
-        range_sal = salary_handle(sal)
-        if range_sal!=None and range_sal!=[0]:
-            range_salary_set.add(tuple(range_sal))
-    return [sal_range for sal_range in range_salary_set]
+        sal_dist = salary_handle(sal)
+        if sal_dist!=None:
+            # range_salary_list.append(sal_dist)
+            range_salary_set.add(tuple(sal_dist))
+    bin_list = [0]*11
+    for sal_dist in range_salary_set:
+        for i in range(11):
+            bin_list[i]+=sal_dist[i]
+    return bin_list

@@ -23,7 +23,9 @@ if __name__ == "__main__":
     APP_NAME="PreprocessData"
     # spark = SparkSession.builder.master("local[*]").appName(APP_NAME).config("spark.es.nodes","elasticsearch").config("spark.es.port","9200").config("spark.es.nodes.wan.only","true").getOrCreate()
     app_config = config.Config(elasticsearch_host="localhost",
-                               elasticsearch_port="9200")
+                               elasticsearch_port="9200",
+                               elasticsearch_input_json="yes",
+                               elasticsearch_nodes_wan_only="False")
     spark = app_config.initialize_spark_session(APP_NAME)
     sc = spark.sparkContext
     sc.addPyFile(os.path.dirname(__file__)+"/patterns.py")
@@ -39,10 +41,6 @@ if __name__ == "__main__":
     extracted_recruit_df.cache()
     extracted_recruit_df.show(5)
     
-    company_df = queries.get_counted_company(extracted_recruit_df)
-    company_df.cache() 
-    company_df.show(5)
-
     framework_plattform_df = queries.get_counted_framework_plattform(extracted_recruit_df)
     framework_plattform_df.cache()
     framework_plattform_df.show(5)
@@ -64,14 +62,11 @@ if __name__ == "__main__":
     grouped_knowledge_df.cache()
     grouped_knowledge_df.show()
 
-    
-    sal_df = queries.get_salary_distribution(extracted_recruit_df)
-    sal_df.cache()
-    sal_df.show()
-    
-    print(queries.get_lang_sal_distr(extracted_recruit_df))
+    company_language_salary_df = queries.get_company_language_salary(extracted_recruit_df)
+    company_language_salary_df.cache()
+    company_language_salary_df.show(5)
 
-    df_to_elasticsearch=(company_df,
+    df_to_elasticsearch=(company_language_salary_df,
                          framework_plattform_df,
                          design_pattern_df,
                          lang_df,
@@ -79,19 +74,11 @@ if __name__ == "__main__":
                          grouped_knowledge_df,
                          sal_df)
     
-    df_es_indices = ("companies",
+    df_es_indices = ("companies_languages_salaries",
                      "frameworks_plattforms",
                      "design_patterns",
                      "languages",
                      "knowledges",
-                     "grouped_knowledges",
-                     "salaries")
+                     "grouped_knowledges")
     
-    es_write_conf = {
-        "es.nodes" : "localhost",
-        "es.port" : "9200",
-        "es.input.json": "yes",
-        "es.nodes.wan.only": "False",
-    }
-
-    save_to_cluster.save_dataframes_to_elasticsearch(df_to_elasticsearch,df_es_indices,es_write_conf)
+    save_to_cluster.save_dataframes_to_elasticsearch(df_to_elasticsearch,df_es_indices,app_config.get_elasticsearch_conf())

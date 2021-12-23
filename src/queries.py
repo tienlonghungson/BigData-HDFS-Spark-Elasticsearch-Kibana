@@ -2,14 +2,16 @@ import pyspark
 from pyspark.sql.functions import explode
 import udfs
 
-def get_counted_company(extracted_recruit_df:pyspark.sql.DataFrame):
-# def get_counted_company(extracted_recruit_df):
-    return extracted_recruit_df.groupBy(extracted_recruit_df["CompanyName"])\
-          .count()\
-          .orderBy("count", ascending=False)
-
 def get_counted_framework_plattform(extracted_recruit_df:pyspark.sql.DataFrame):
-# def get_counted_framework_plattform(extracted_recruit_df):
+    '''
+    Return a dataframe of 2 columns:
+    Col1 (FrameworkPlattform): StringType, name of framework and plattform
+    Col2 (count): IntegerType, number of appearances for each framework and plattform
+
+    Parameters
+    ----------
+    extracted_recruit_df : orginal dataframe
+    '''
     return extracted_recruit_df.withColumn("FrameworkPlattform", explode("FrameworkPlattforms"))\
           .select("FrameworkPlattform")\
           .groupBy("FrameworkPlattform")\
@@ -17,7 +19,15 @@ def get_counted_framework_plattform(extracted_recruit_df:pyspark.sql.DataFrame):
           .orderBy("count",ascending=False)
 
 def get_counted_design_pattern(extracted_recruit_df:pyspark.sql.DataFrame):
-# def get_counted_design_pattern(extracted_recruit_df):
+    '''
+    Return a dataframe of 2 columns:
+    Col1 (DesignPattern): StringType, name of design pattern
+    Col2 (count): IntegerType, number of appearances for each design pattern
+
+    Parameters
+    ----------
+    extracted_recruit_df : orginal dataframe
+    '''
     return extracted_recruit_df.withColumn("DesignPattern", explode("DesignPatterns"))\
           .select("DesignPattern")\
           .groupBy("DesignPattern")\
@@ -25,7 +35,15 @@ def get_counted_design_pattern(extracted_recruit_df:pyspark.sql.DataFrame):
           .orderBy("count",ascending=False)
 
 def get_counted_language(extracted_recruit_df:pyspark.sql.DataFrame):
-# def get_counted_language(extracted_recruit_df):
+    '''
+    Return a dataframe of 2 columns:
+    Col1 (Language): StringType, name of language
+    Col2 (count): IntegerType, number of appearances for each language
+
+    Parameters
+    ----------
+    extracted_recruit_df : orginal dataframe
+    '''
     return extracted_recruit_df.withColumn("Language", explode("Languages"))\
           .select("Language")\
           .groupBy("Language")\
@@ -33,46 +51,43 @@ def get_counted_language(extracted_recruit_df:pyspark.sql.DataFrame):
           .orderBy("count",ascending=False)
 
 def get_counted_knowledge(extracted_recruit_df:pyspark.sql.DataFrame):
-# def get_counted_knowledge(extracted_recruit_df):
+    '''
+    Return a dataframe of 2 columns:
+    Col1 (Knowledge): StringType, name of knowledge
+    Col2 (count): IntegerType, number of appearances for each knowledge
+
+    Parameters
+    ----------
+    extracted_recruit_df : orginal dataframe
+    '''
     return extracted_recruit_df.withColumn("Knowledge", explode("Knowledges"))\
           .select("Knowledge")\
           .groupBy("Knowledge")\
           .count()\
           .orderBy("count",ascending=False)
 
-# from pyspark.sql import functions as f
 def get_grouped_knowledge(knowledge_df:pyspark.sql.DataFrame):
-    return knowledge_df.withColumn('category', udfs.labeling_knowledge('Knowledge'))\
-          .groupBy('category').sum("count").filter("category!='null'")
+    '''
+    Return a dataframe of 2 columns:
+    Col1 (Category): StringType, name of category of knowledge
+    Col2 (count): IntegerType, number of appearances for each category of knowledge
 
-def get_salary_distribution(extracted_recruit_df:pyspark.sql.DataFrame):
-# def get_salary_distribution(extracted_recruit_df):
-    nested_salary_df=extracted_recruit_df.withColumn("SalaryRange", explode("Salaries"))\
-                      .select("SalaryRange")
-    return nested_salary_df.withColumn("Salary",explode("SalaryRange"))\
-          .select("Salary")\
-          .groupBy("Salary")\
-          .count()\
-          .orderBy("count",ascending=False)
+    Parameters
+    ----------
+    knowledge_df : dataframe of knowledges
+    '''
+    return knowledge_df.withColumn('Category', udfs.labeling_knowledge('Knowledge'))\
+          .groupBy('Category').sum("count").filter("Category!='null'")
 
-def get_lang_sal_distr(extracted_recruit_df:pyspark.sql.DataFrame):
-# def get_lang_sal_distr(extracted_recruit_df):
-    lang_sal_dict = extracted_recruit_df.select("Languages","Salaries").collect()
-    lang_sal_dist = dict()
-    for row in lang_sal_dict:
-        row_list = list(row)
-        for lang in row_list[0]:
-            for sal_range in row_list[1]:
-                LEN = len(sal_range)
-                if LEN>0:
-                    # LEN_1 = 1/LEN
-                    for sal in sal_range:
-                        try :
-                            # lang_sal_dist[lang][str(sal)]+=LEN_1
-                            lang_sal_dist[lang][str(sal)]+=1
-                        except KeyError:
-                            if not (lang in lang_sal_dist):
-                                lang_sal_dist[lang] = dict()
-                            # lang_sal_dist[lang][str(sal)] = LEN_1
-                            lang_sal_dist[lang][str(sal)] = 1
-    return lang_sal_dist
+def get_company_language_salary(extracted_recruit_df:pyspark.sql.DataFrame):
+    '''
+    Return a dataframe of 3 columns:
+    Col1 (CompanyNames): StringType, name of company
+    Col2 (Languages): StringType, name of programming language
+    Col3 (Salaries) : ArrayType(IntegerType) : list of salary bins
+
+    Parameters
+    ----------
+    knowledge_df : dataframe of knowledges
+    '''
+    return extracted_recruit_df.select("CompanyName","Languages","Salaries")
