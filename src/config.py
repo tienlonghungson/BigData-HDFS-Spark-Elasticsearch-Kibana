@@ -2,11 +2,11 @@ from pyspark.sql import SparkSession
 
 class Config:
     def __init__(self,
-                  elasticsearch_host,
-                  elasticsearch_port,
-                  elasticsearch_input_json,
-                  elasticsearch_nodes_wan_only
-                # hdfs_datanode_host,
+                elasticsearch_host,
+                elasticsearch_port,
+                elasticsearch_input_json,
+                elasticsearch_nodes_wan_only,
+                hdfs_namenode
                 # hdfs_user
                  ):
         self.elasticsearch_conf = {
@@ -15,19 +15,25 @@ class Config:
             "es.input.json":elasticsearch_input_json,
             "es.nodes.wan.only": elasticsearch_nodes_wan_only
         }
-        # self.hdfs_datanode_host = hdfs_datanode_host
+        self.hdfs_namenode = hdfs_namenode
         # self.hdfs_user = hdfs_user
         self.spark_app = None
         
     def get_elasticsearch_conf(self):
         return self.elasticsearch_conf
 
+    def get_hdfs_namenode(self):
+        return self.hdfs_namenode
+
     def initialize_spark_session(self,appName):
         if self.spark_app == None :
             self.spark_app = (SparkSession
-                        .builder.master("local[*]")
+                        .builder.master("spark://spark-master:7077")
                         .appName(appName)
-                        .config("spark.jars","/content/elasticsearch-hadoop-7.15.1.jar")
-                        .config("spark.driver.extraClassPath","/content/elasticsearch-hadoop-7.15.1.jar")
+                        .config("spark.jars","/elasticsearch-hadoop-7.15.1.jar")
+                        .config("spark.driver.extraClassPath","/elasticsearch-hadoop-7.15.1.jar")
+                        .config("spark.es.nodes",self.elasticsearch_conf["es.nodes"])
+                        .config("spark.es.port",self.elasticsearch_conf["es.port"])
+                        .config("spark.es.nodes.wan.only",self.elasticsearch_conf["es.nodes.wan.only"])
                         .getOrCreate())
         return self.spark_app

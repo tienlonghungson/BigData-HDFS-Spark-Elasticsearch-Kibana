@@ -1,18 +1,19 @@
+# coding=utf-8
 from pyspark.sql.functions import udf
 from pyspark.sql.types import *
 import re, unicodedata
 import patterns
 import math
 @udf(returnType=ArrayType(StringType()))
-def extract_framework_plattform(mo_ta_cong_viec: str,yeu_cau_ung_vien: str):
+def extract_framework_plattform(mo_ta_cong_viec,yeu_cau_ung_vien):
     return [framework for framework in patterns.framework_plattforms if re.search(framework, mo_ta_cong_viec + " " + yeu_cau_ung_vien, re.IGNORECASE)]
 
 @udf(returnType=ArrayType(StringType()))
-def extract_language(mo_ta_cong_viec: str,yeu_cau_ung_vien: str):
+def extract_language(mo_ta_cong_viec,yeu_cau_ung_vien):
     return [language for language in patterns.languages if re.search(language.replace("+", "\+").replace("(", "\(").replace(")", "\)"), mo_ta_cong_viec + " " + yeu_cau_ung_vien, re.IGNORECASE)]
 
 @udf(returnType=ArrayType(StringType()))
-def extract_knowledge(mo_ta_cong_viec: str,yeu_cau_ung_vien: str):
+def extract_knowledge(mo_ta_cong_viec,yeu_cau_ung_vien):
     return [knowledge for knowledge in patterns.knowledges if re.search(knowledge, mo_ta_cong_viec + " " + yeu_cau_ung_vien, re.IGNORECASE)]
 
 def broadcast_labeled_knowledges(sc,labeled_knowledges):
@@ -20,25 +21,25 @@ def broadcast_labeled_knowledges(sc,labeled_knowledges):
     mapped_knowledge = sc.broadcast(labeled_knowledges)
 
 @udf(returnType=StringType())
-def labeling_knowledge(knowledge: str):
+def labeling_knowledge(knowledge):
     try :
         return mapped_knowledge.value[knowledge]
     except :
         return None
 
 @udf(returnType=ArrayType(StringType()))
-def extract_design_pattern(mo_ta_cong_viec: str,yeu_cau_ung_vien: str):
+def extract_design_pattern(mo_ta_cong_viec,yeu_cau_ung_vien):
     return [design_pattern for design_pattern in patterns.design_patterns if re.search(design_pattern, mo_ta_cong_viec + " " + yeu_cau_ung_vien, re.IGNORECASE)]
 
 @udf(returnType=ArrayType(IntegerType()))
-def normalize_salary(quyen_loi:str):
-    def extract_salary(quyen_loi: str):
+def normalize_salary(quyen_loi):
+    def extract_salary(quyen_loi):
         salaries = []
         for pattern in patterns.salary_patterns:
             salaries.extend(re.findall(pattern, unicodedata.normalize('NFKC', quyen_loi), re.IGNORECASE))
         return salaries
 
-    def sal_to_bin_list(sal:int):
+    def sal_to_bin_list(sal):
         vnd_range_list=[0]*11
         sal = int(sal/10)
         if sal<10:
@@ -47,7 +48,7 @@ def normalize_salary(quyen_loi:str):
             vnd_range_list[10]=1
         return vnd_range_list
 
-    def range_to_bin_list(start:int, end:int):
+    def range_to_bin_list(start, end):
         vnd_range_list=[0]*11
         start = int(start/10)
         end = int(end/10)
@@ -59,10 +60,10 @@ def normalize_salary(quyen_loi:str):
         return vnd_range_list
 
 
-    def dollar_to_vnd(dollar:int):
+    def dollar_to_vnd(dollar):
         return sal_to_bin_list(math.floor(dollar*23/1000))
 
-    def dollar_handle(currency:str):
+    def dollar_handle(currency):
         if not currency.__contains__("$"):
             if not currency.__contains__("USD"):
                 if not currency.__contains__("usd"):
@@ -82,9 +83,9 @@ def normalize_salary(quyen_loi:str):
         except ValueError:
             return [0]*11
 
-    def normalize_vnd(vnd:str):
+    def normalize_vnd(vnd):
         mill = "000000"
-        norm_vnd = vnd.replace("triệu",mill).replace("Triệu",mill)\
+        norm_vnd = vnd.encode('utf-8').replace("triệu",mill).replace("Triệu",mill)\
         .replace("TRIỆU",mill).replace("m",mill).replace("M",mill)\
         .replace(".","").replace(" ","").replace(",","")
         try :
@@ -95,7 +96,7 @@ def normalize_salary(quyen_loi:str):
             print("Value Error while converting ",norm_vnd)
             return None
 
-    def vnd_handle(ori_range_list:list):
+    def vnd_handle(ori_range_list):
 
         if (len(ori_range_list)==1):
             sal = normalize_vnd(ori_range_list[0])
@@ -115,7 +116,7 @@ def normalize_salary(quyen_loi:str):
                 print("Error Converting Start ",ori_range_list[0]," with end ",ori_range_list[1])
         return [0]*11
 
-    def salary_handle(currency:str):
+    def salary_handle(currency):
         range_val = dollar_handle(currency)
         # print("DollarHandle ",currency," and get ",range_val)
         if (range_val == None):

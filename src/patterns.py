@@ -1,3 +1,4 @@
+# coding=utf-8
 framework_plattforms = ['Docker', 'OSP', 'Premiere', 'directAdmin', 'typography', 'Prometheus', 'visual weight', 'Kubernetes', 'JDBC', 'UnitTest',
             'Servlets', 'cPanel', 'MySQL', '.NET', 'Ruby on Rails', 'JSP', 'IdentityServer', 'VoIP', 'AdobeXD', 'CMake', 'Autocad',
             'Spring', 'Django', 'CRM', 'K8S', 'Nginx', 'firmware', 'Google Trend', 'psd', 'CSRF', 'Reactjs', 'Struts', 'WebSocket',
