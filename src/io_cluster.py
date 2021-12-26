@@ -1,24 +1,5 @@
 import json
 from pyspark.sql import DataFrame
-# from functools import reduce
-
-# def fetch_and_merge_files(spark,schema,client,path,config):
-#     """
-#         Generator Function to fetch files stored in the hdfs file system and lazily evaluate them when 
-#         concatenating them
-#     """
-#     directory_path = f"{config.hdfs_datanode_host}/{path}"
-    
-#     def get_files(path):
-#         nonlocal directory_path
-#         for file in client.list(path):
-#             print(f"Processing file: {file}")
-#             yield spark.read.schema(schema).option("multiline","true").json(f"{directory_path}/{file}")
-#     def unionAll(*dfs):
-#         return reduce(DataFrame.unionAll,dfs)
-    
-#     return unionAll(*(file for file in get_files(path)))
-
 
 def save_dataframes_to_hdfs(path,config,data_dfs,target_file_names):
     """

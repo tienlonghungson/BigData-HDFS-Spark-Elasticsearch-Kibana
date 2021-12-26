@@ -52,10 +52,9 @@ if __name__ == "__main__":
     # extracted_recruit_df.show(5)
 
     ##========save extracted_recruit_df to hdfs========================
-    # df_to_hdfs=(extracted_recruit_df,)
-    # df_hdfs_name = ("extracted_recruit.json",)
-    # print("Type of extracted_recruit_df: ",type(extracted_recruit_df))
-    # io_cluster.save_dataframes_to_hdfs("data/extracteddata", app_config, df_to_hdfs, df_hdfs_name)
+    df_to_hdfs=(extracted_recruit_df,)
+    df_hdfs_name = ("extracted_recruit.json",)
+    io_cluster.save_dataframes_to_hdfs("data/extracteddata", app_config, df_to_hdfs, df_hdfs_name)
 
     ##========make some query==========================================
     framework_plattform_df = queries.get_counted_framework_plattform(extracted_recruit_df)
@@ -84,22 +83,6 @@ if __name__ == "__main__":
     # company_language_salary_df.show(5)
 
     ##========save some df to elasticsearch========================
-    # df_to_hdfs=(
-    #               company_language_salary_df,
-    #               # framework_plattform_df,
-    #               design_pattern_df,
-    #               lang_df,
-    #               knowledge_df,
-    #               grouped_knowledge_df
-    #             )
-    # df_hdfs_name = (
-    #               "company_language_salary_df.json",
-    #               # framework_plattform_df,
-    #               "design_pattern_df.json",
-    #               "lang_df.json",
-    #               "knowledge_df.json",
-    #               "grouped_knowledge_df.json"
-    #             )
     df_to_elasticsearch=(
                          company_language_salary_df,
                          framework_plattform_df,
@@ -117,5 +100,4 @@ if __name__ == "__main__":
                      "knowledges",
                      "grouped_knowledges"
                      )
-    # io_cluster.save_dataframes_to_hdfs("data/extracteddata", app_config, df_to_hdfs, df_hdfs_name)
     io_cluster.save_dataframes_to_elasticsearch(df_to_elasticsearch,df_es_indices,app_config.get_elasticsearch_conf())

@@ -1,5 +1,18 @@
-# Hadoop Docker
+<div align="center">
 
+# HDFS Spark Elasticsearch and Kibana
+
+</div>
+
+# Data Prepataion
+- Crawled data is stored in `rawdata` folder
+- Code to crawl is from my [IT-Jobs-TopCV-Crawler](https://github.com/tienlonghungson/IT-Jobs-TopCV-Crawler)
+
+# Requirement:
+- At least 8GB RAM (but kibana needs to be left out)
+- Set vmmem at least 5GB RAM
+
+# Hadoop Docker
 ## Quick Start
 
 To deploy an example HDFS cluster, run:
@@ -41,5 +54,7 @@ The available configurations are:
 * /etc/hadoop/httpfs-site.xml HTTPFS_CONF
 * /etc/hadoop/kms-site.xml KMS_CONF
 * /etc/hadoop/mapred-site.xml  MAPRED_CONF
+
+
 
 

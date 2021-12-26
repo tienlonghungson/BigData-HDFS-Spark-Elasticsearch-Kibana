@@ -7,7 +7,6 @@ class Config:
                 elasticsearch_input_json,
                 elasticsearch_nodes_wan_only,
                 hdfs_namenode
-                # hdfs_user
                  ):
         self.elasticsearch_conf = {
             'es.nodes': elasticsearch_host,
@@ -16,7 +15,6 @@ class Config:
             "es.nodes.wan.only": elasticsearch_nodes_wan_only
         }
         self.hdfs_namenode = hdfs_namenode
-        # self.hdfs_user = hdfs_user
         self.spark_app = None
         
     def get_elasticsearch_conf(self):
