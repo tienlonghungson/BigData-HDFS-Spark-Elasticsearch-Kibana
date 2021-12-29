@@ -17,6 +17,9 @@ def extract_knowledge(mo_ta_cong_viec,yeu_cau_ung_vien):
     return [knowledge for knowledge in patterns.knowledges if re.search(knowledge, mo_ta_cong_viec + " " + yeu_cau_ung_vien, re.IGNORECASE)]
 
 def broadcast_labeled_knowledges(sc,labeled_knowledges):
+    '''
+    broadcast the mapped of labeled_knowledges to group data in knowledge field
+    '''
     global mapped_knowledge
     mapped_knowledge = sc.broadcast(labeled_knowledges)
 
@@ -33,63 +36,104 @@ def extract_design_pattern(mo_ta_cong_viec,yeu_cau_ung_vien):
 
 @udf(returnType=ArrayType(IntegerType()))
 def normalize_salary(quyen_loi):
+    BIN_SIZE=5
     def extract_salary(quyen_loi):
+        '''
+        Return a list of salary patterns found in raw data
+
+        Parameters
+        ----------
+        quyen_loi : quyen_loi field in raw data
+        '''
         salaries = []
         for pattern in patterns.salary_patterns:
             salaries.extend(re.findall(pattern, unicodedata.normalize('NFKC', quyen_loi), re.IGNORECASE))
         return salaries
 
     def sal_to_bin_list(sal):
-        vnd_range_list=[0]*11
-        sal = int(sal/10)
-        if sal<10:
-            vnd_range_list[sal]=1
+        '''
+        Return a list of bin containing salary value
+
+        Parameters
+        ----------
+        sal : salary value
+        '''
+        sal = int(sal/BIN_SIZE)
+        if sal<int(100/BIN_SIZE):
+            return [BIN_SIZE*sal]
         else :
-            vnd_range_list[10]=1
-        return vnd_range_list
+            return [100]
 
     def range_to_bin_list(start, end):
-        vnd_range_list=[0]*11
-        start = int(start/10)
-        end = int(end/10)
-        if end >= 10:
-            end=10
-        for i in range(start,end+1):
-        # vnd_range_list=[sal for sal in range(start,end+1)]
-            vnd_range_list[i]=1
-        return vnd_range_list
+        '''
+        Return a list of bin containing salary range
+
+        Parameters
+        ----------
+        start : the start of salary range
+        end : the end of salary range
+        '''
+        start = int(start/BIN_SIZE)
+        end = int(end/BIN_SIZE)
+        if end >= int(100/BIN_SIZE):
+            end=int(100/BIN_SIZE)
+        return [BIN_SIZE*i for i in range(start,end+1)]
 
 
     def dollar_to_vnd(dollar):
+        '''
+        Return a list of bin containing salary value
+
+        Parameters
+        ----------
+        dollar : salary value in dollar unit
+        '''
         return sal_to_bin_list(math.floor(dollar*23/1000))
 
     def dollar_handle(currency):
+        '''
+        Handle currency
+        If currency is in dollar unit, returns the salary bins
+        Otherwise returns None
+
+        Parameter
+        ---------
+        currency : string of salary pattern
+        '''
         if not currency.__contains__("$"):
             if not currency.__contains__("USD"):
                 if not currency.__contains__("usd"):
                     return None
                 else :
                     ext_curr= currency.replace("usd","")
-            ext_curr = currency.replace("USD","")
+            else :
+                ext_curr = currency.replace("USD","")
         elif (currency.startswith("$")):
             ext_curr = currency[1:]
         else :
             ext_curr = currency[:-1]
         ext_curr= ext_curr.replace(".","")
         try :
-            # print("try converting ",ext_curr)
             val_curr = int(ext_curr)
             return dollar_to_vnd(val_curr)
         except ValueError:
-            return [0]*11
+            return None
 
     def normalize_vnd(vnd):
+        '''
+        Return normalized currency in VND unit
+        Normalize currency is a string of currency in milion VND unit
+        The postfix such as Triệu, triệu, M, m,... is removed
+
+        Parameters
+        ----------
+        vnd : string of salary in vnd unit
+        '''
         mill = "000000"
         norm_vnd = vnd.encode('utf-8').replace("triệu",mill).replace("Triệu",mill)\
         .replace("TRIỆU",mill).replace("m",mill).replace("M",mill)\
         .replace(".","").replace(" ","").replace(",","")
         try :
-            # print("Norm = ",norm_vnd)
             vnd = math.floor(int(norm_vnd)/1000000)
             return vnd
         except ValueError:
@@ -97,43 +141,51 @@ def normalize_salary(quyen_loi):
             return None
 
     def vnd_handle(ori_range_list):
-
+        '''
+        Handle currency, returns the salary bins
+        The currency must be preprocessed and returned None by dollar_handle()
+        The currency must be stripped and splitted by "-" to become a list
+        
+        Parameters
+        ----------
+        ori_range_list : the range of salary (a list containing at most 2 element)
+        '''
         if (len(ori_range_list)==1):
             sal = normalize_vnd(ori_range_list[0])
             if sal!=None:
-                # vnd_range_list=[sal]
                 return sal_to_bin_list(sal)
         else :
             try :
                 start = int(ori_range_list[0].strip().replace(".","").replace(",",""))
                 end = normalize_vnd(ori_range_list[1])
                 if end!=None :
-                    # vnd_range_list=[sal for sal in range(start,end+1)]
                     return range_to_bin_list(start,end)
                 else :
                     print("Error converting end ",ori_range_list[1]," with start ",ori_range_list[0])
             except ValueError:
                 print("Error Converting Start ",ori_range_list[0]," with end ",ori_range_list[1])
-        return [0]*11
+        # return [0]*11
+        return None
 
     def salary_handle(currency):
+        '''
+        Handle currency
+        Return salary bin
+
+        Parameters
+        ----------
+        currency : a string
+        '''
         range_val = dollar_handle(currency)
-        # print("DollarHandle ",currency," and get ",range_val)
         if (range_val == None):
             splitted_currency = currency.strip().strip("-").split("-")
             range_val = vnd_handle(splitted_currency)
-            # print("VNDHandle ",currency," and get ",range_val)
         return range_val
 
     salaries = extract_salary(quyen_loi)
-    range_salary_set=set()
+    bin_set = set()
     for sal in salaries:
-        sal_dist = salary_handle(sal)
-        if sal_dist!=None:
-            # range_salary_list.append(sal_dist)
-            range_salary_set.add(tuple(sal_dist))
-    bin_list = [0]*11
-    for sal_dist in range_salary_set:
-        for i in range(11):
-            bin_list[i]+=sal_dist[i]
-    return bin_list
+        sal_bins = salary_handle(sal)
+        if sal_bins!= None and sal_bins!=[]:
+            bin_set = bin_set.union(tuple(sal_bins))
+    return sorted(list(bin_set))

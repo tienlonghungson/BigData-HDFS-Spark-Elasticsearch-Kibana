@@ -5,12 +5,10 @@ from pyspark.sql.types import *
 from pyspark import SparkConf, SparkContext
 from pyspark.sql import SparkSession
 
-# from hdfs import InsecureClient
-
 from operator import add
 import sys,os
 from pyspark.sql.types import *
-# import json
+
 import patterns, udfs , queries, config, io_cluster
 
 
@@ -25,7 +23,7 @@ schema = StructType([
 if __name__ == "__main__":
     
     APP_NAME="PreprocessData"
-    # spark = SparkSession.builder.master("local[*]").appName(APP_NAME).config("spark.es.nodes","elasticsearch").config("spark.es.port","9200").config("spark.es.nodes.wan.only","true").getOrCreate()
+    
     app_config = config.Config(elasticsearch_host="elasticsearch",
                                elasticsearch_port="9200",
                                elasticsearch_input_json="yes",
@@ -35,9 +33,6 @@ if __name__ == "__main__":
     spark = app_config.initialize_spark_session(APP_NAME)
     sc = spark.sparkContext
     sc.addPyFile(os.path.dirname(__file__)+"/patterns.py")
-    
-    # client = InsecureClient(app_config.get_hdfs_namenode(),user="sparkmaster")
-    # raw_recruit_df = io_cluster.fetch_and_merge_files(spark,schema,client,"/data/rawdata",app_config)
     
     raw_recruit_df = spark.read.schema(schema).option("multiline","true").json("hdfs://namenode:9000/data/rawdata/*.json")
     # raw_recruit_df.show(5)
@@ -57,18 +52,6 @@ if __name__ == "__main__":
     io_cluster.save_dataframes_to_hdfs("data/extracteddata", app_config, df_to_hdfs, df_hdfs_name)
 
     ##========make some query==========================================
-    framework_plattform_df = queries.get_counted_framework_plattform(extracted_recruit_df)
-    framework_plattform_df.cache()
-    # framework_plattform_df.show(5)
-
-    design_pattern_df = queries.get_counted_design_pattern(extracted_recruit_df)
-    design_pattern_df.cache()
-    # design_pattern_df.show(5)
-
-    lang_df = queries.get_counted_language(extracted_recruit_df)
-    lang_df.cache()
-    # lang_df.show(5)
-
     knowledge_df = queries.get_counted_knowledge(extracted_recruit_df)
     knowledge_df.cache()
     # knowledge_df.show(5)
@@ -78,25 +61,18 @@ if __name__ == "__main__":
     grouped_knowledge_df.cache()
     # grouped_knowledge_df.show()
 
-    company_language_salary_df = queries.get_company_language_salary(extracted_recruit_df)
-    company_language_salary_df.cache()
-    # company_language_salary_df.show(5)
+    extracted_recruit_df = extracted_recruit_df.drop("Knowledges")
+    extracted_recruit_df.cache()
 
     ##========save some df to elasticsearch========================
     df_to_elasticsearch=(
-                         company_language_salary_df,
-                         framework_plattform_df,
-                         design_pattern_df,
-                         lang_df,
+                         extracted_recruit_df,
                          knowledge_df,
                          grouped_knowledge_df
                          )
     
     df_es_indices = (
-                    "companies_languages_salaries",
-                     "frameworks_plattforms",
-                     "design_patterns",
-                     "languages",
+                     "recruit",
                      "knowledges",
                      "grouped_knowledges"
                      )
