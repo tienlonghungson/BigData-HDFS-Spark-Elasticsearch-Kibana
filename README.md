@@ -4,56 +4,49 @@
 
 </div>
 
+# Brief Introduction
+In this project, we want to get some insight of the labor market, with data crawled from recruitment website. We focus on IT jobs demand in [TopCV.vn](https://www.topcv.vn/viec-lam).
+
+Our system is designed as follow:
+
+![architecture](report/images/BigDataSystem.png)
+Crawled data is first uploaded to HDFS cluster. Spark Cluster reads that data and filters information about frameworks, plattforms, design patterns, programming languages, knowledges and salaries. The extracted data will be saved again in HDFS Cluster (for storage) and Elasticsearch cluster (for visualization in Kibana).
+
+Here is an example of visualization in Kibana about salary range 
+
+![sal_vis](report/images/saldist.png)
+See the `report` directory for the full report and slide.
 # Data Prepataion
 - Crawled data is stored in `rawdata` folder
 - Code to crawl is from my [IT-Jobs-TopCV-Crawler](https://github.com/tienlonghungson/IT-Jobs-TopCV-Crawler)
 
+# Work Flow
+We first create 2 directories in HDFS cluster: `/data/rawdata` and `/data/extracteddata`. The crawled data will be uploaded to `/data/rawdata`.
+
+Execute the bash file `run.sh` (this bash will turn on docker compose, upload src folder and jar files to spark-master)
+```
+/bin/bash run.sh
+```
+Come inside spark-master node
+```
+docker exec -it spark-master /bin/bash
+```
+Do the spark-submit jobs:
+```
+spark/bin/spark-submit --master spark://spark-master:7077 --jars elasticsearch-hadoop-7.15.1.jar --driver-class-path elasticsearch-hadoop-7.15.1.jar src/main.py 
+```
+
 # Requirement:
 - At least 8GB RAM (but kibana needs to be left out)
-- Set vmmem at least 5GB RAM
+- Set vmmem at least 4.5GB RAM
 
-# Hadoop Docker
-## Quick Start
+# Acknowledgement
+This project can not be completed without the help of our friend (also our advisor) [Quan Nguyen](https://github.com/coldzys), and the one who gave us the idea, our brother [Xuan Nam](https://github.com/namnx96).
 
-To deploy an example HDFS cluster, run:
-```
-  docker-compose up
-```
-
-Run example wordcount job:
-```
-  make wordcount
-```
-
-`docker-compose` creates a docker network that can be found by running `docker network list`, e.g. `dockerhadoop_default`.
-
-Run `docker network inspect` on the network (e.g. `dockerhadoop_default`) to find the IP the hadoop interfaces are published on. Access these interfaces with the following URLs:
-
-* Namenode: http://<dockerhadoop_IP_address>:9870/dfshealth.html#tab-overview
-* Datanode: http://<dockerhadoop_IP_address>:9864/
-## Configure Environment Variables
-
-The configuration parameters can be specified in the hadoop.env file or as environmental variables for specific services (e.g. namenode, datanode etc.):
-```
-  CORE_CONF_fs_defaultFS=hdfs://namenode:8020
-```
-
-CORE_CONF corresponds to core-site.xml. fs_defaultFS=hdfs://namenode:8020 will be transformed into:
-```
-  <property><name>fs.defaultFS</name><value>hdfs://namenode:8020</value></property>
-```
-To define dash inside a configuration parameter, use triple underscore, such as YARN_CONF_yarn_log___aggregation___enable=true (yarn-site.xml):
-```
-  <property><name>yarn.log-aggregation-enable</name><value>true</value></property>
-```
-
-The available configurations are:
-* /etc/hadoop/core-site.xml CORE_CONF
-* /etc/hadoop/hdfs-site.xml HDFS_CONF
-* /etc/hadoop/yarn-site.xml YARN_CONF
-* /etc/hadoop/httpfs-site.xml HTTPFS_CONF
-* /etc/hadoop/kms-site.xml KMS_CONF
-* /etc/hadoop/mapred-site.xml  MAPRED_CONF
+The following sources are helpful:
+- https://datascienceandengineering.com/projects/data-analysis-using-spark-and-elasticsearch/
+- https://spark.apache.org/docs/latest/submitting-applications.html
+- https://www.tutorialspoint.com/kibana/kibana_aggregation_and_metrics.htm
 
 
 

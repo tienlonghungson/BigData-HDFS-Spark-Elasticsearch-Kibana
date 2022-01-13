@@ -67,13 +67,13 @@ if __name__ == "__main__":
     ##========save some df to elasticsearch========================
     df_to_elasticsearch=(
                          extracted_recruit_df,
-                         knowledge_df,
+                        #  knowledge_df,
                          grouped_knowledge_df
                          )
     
     df_es_indices = (
                      "recruit",
-                     "knowledges",
+                  #    "knowledges",
                      "grouped_knowledges"
                      )
     io_cluster.save_dataframes_to_elasticsearch(df_to_elasticsearch,df_es_indices,app_config.get_elasticsearch_conf())
