@@ -1,6 +1,6 @@
 <div align="center">
 
-# HDFS Spark Elasticsearch and Kibana
+# Recruitment Insight
 
 </div>
 
@@ -10,11 +10,13 @@ In this project, we want to get some insight of the labor market, with data craw
 Our system is designed as follow:
 
 ![architecture](report/images/BigDataSystem.png)
+
 Crawled data is first uploaded to HDFS cluster. Spark Cluster reads that data and filters information about frameworks, plattforms, design patterns, programming languages, knowledges and salaries. The extracted data will be saved again in HDFS Cluster (for storage) and Elasticsearch cluster (for visualization in Kibana).
 
 Here is an example of visualization in Kibana about salary range 
 
 ![sal_vis](report/images/saldist.png)
+
 See the `report` directory for the full report and slide.
 # Data Prepataion
 - Crawled data is stored in `rawdata` folder
@@ -47,7 +49,3 @@ The following sources are helpful:
 - https://datascienceandengineering.com/projects/data-analysis-using-spark-and-elasticsearch/
 - https://spark.apache.org/docs/latest/submitting-applications.html
 - https://www.tutorialspoint.com/kibana/kibana_aggregation_and_metrics.htm
-
-
-
-
